@@ -34,7 +34,6 @@ const totalPrice = async () => {
   let total = 0;
   const ol = [...document.querySelectorAll('.cart__item')];
   const array = ol.map((li) => parseFloat(li.innerText.split('$')[1]));
-  console.log(array);
   total = array.reduce((acc, current) => acc + current * 100, 0);
   document.querySelector('.total-price').innerText = total / 100;
 };
@@ -42,6 +41,16 @@ const totalPrice = async () => {
 function saveCartListen() {
   const setItem = document.querySelector(cartItem);
   localStorage.setItem('key', JSON.stringify(setItem.innerHTML));
+}
+
+function emptyCart() {
+  const button = document.querySelector('.empty-cart');
+  button.addEventListener('click', () => {
+    const ol = document.querySelector(cartItem);
+    ol.innerHTML = '';
+    saveCartListen();
+    totalPrice();
+  });
 }
 
 function cartItemClickListener(event) {
@@ -59,10 +68,6 @@ function saveCartListenContinue() {
     li.addEventListener('click', cartItemClickListener);
   });
 }
-
-/* function cartItemClickListener(event) {
-  // coloque seu código aqui
-}  */
 
 function createCartItemElement({ id, title, price }) {
   const li = document.createElement('li');
@@ -92,6 +97,17 @@ const pickCar = () => {
     });
   });
 };
+const loading = () => {
+  const div = document.createElement('div');
+  const body = document.querySelector('body');
+  body.appendChild(div);
+  div.className = 'loading';
+  div.innerText = 'loading...';
+};
+
+const removeLoading = () => {
+  document.querySelector('.loading').remove();
+}; 
 
 const fetchCurrency = async () => {
   const endPoint = 'https://api.mercadolibre.com/sites/MLB/search?q=computador';
@@ -105,6 +121,7 @@ const fetchCurrency = async () => {
 };
 
 const fetchCurrencyAsyncAwait = async () => {
+  loading();
   const data = await fetchCurrency();
   data.forEach((object) => {
     const productElement = createProductItemElement(
@@ -118,6 +135,8 @@ const fetchCurrencyAsyncAwait = async () => {
 window.onload = async function onload() {
   saveCartListenContinue();
   await fetchCurrencyAsyncAwait();
+  removeLoading(); 
   pickCar();
   totalPrice();
+  emptyCart();
 };
