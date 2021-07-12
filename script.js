@@ -30,6 +30,15 @@ function getSkuFromProductItem(item) {
   return item.querySelector('span.item__sku').innerText;
 }
 
+const totalPrice = async () => {
+  let total = 0;
+  const ol = [...document.querySelectorAll('.cart__item')];
+  const array = ol.map((li) => parseFloat(li.innerText.split('$')[1]));
+  console.log(array);
+  total = array.reduce((acc, current) => acc + current * 100, 0);
+  document.querySelector('.total-price').innerText = total / 100;
+};
+
 function saveCartListen() {
   const setItem = document.querySelector(cartItem);
   localStorage.setItem('key', JSON.stringify(setItem.innerHTML));
@@ -38,6 +47,7 @@ function saveCartListen() {
 function cartItemClickListener(event) {
   event.target.remove('li');
   saveCartListen();
+  totalPrice();
 }
 
 function saveCartListenContinue() {
@@ -69,6 +79,7 @@ const fetchId = (id) => {
       const setId = data;
       document.querySelector(cartItem).appendChild(createCartItemElement(setId));
       saveCartListen();
+      totalPrice();
     });
 };
 
@@ -89,22 +100,24 @@ const fetchCurrency = async () => {
       .then((response) => response.json())
       .then((object) => {
         resolve(object.results);
-    });
+      });
   });
 };
 
-  const fetchCurrencyAsyncAwait = async () => { 
-    const data = await fetchCurrency();
-    data.forEach((object) => {
-      const productElement = createProductItemElement(
-        object.id, object.title, object.thumbnail,
-        );
-        document.querySelector('.items').appendChild(productElement);
-      });
-  };
-  
-  window.onload = async function onload() { 
+const fetchCurrencyAsyncAwait = async () => {
+  const data = await fetchCurrency();
+  data.forEach((object) => {
+    const productElement = createProductItemElement(
+      object.id, object.title, object.thumbnail,
+    );
+    document.querySelector('.items').appendChild(productElement);
+  });
+  totalPrice();
+};
+
+window.onload = async function onload() {
   saveCartListenContinue();
-  await fetchCurrencyAsyncAwait(); 
+  await fetchCurrencyAsyncAwait();
   pickCar();
-  };
+  totalPrice();
+};
