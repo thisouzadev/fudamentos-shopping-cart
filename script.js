@@ -31,7 +31,7 @@ function getSkuFromProductItem(item) {
 }
 
 function saveCartListen() {
-  const setItem = document.querySelector('.cart__items');
+  const setItem = document.querySelector(cartItem);
   localStorage.setItem('key', JSON.stringify(setItem.innerHTML));
 }
 
@@ -42,9 +42,9 @@ function cartItemClickListener(event) {
 
 function saveCartListenContinue() {
   const cartItemStorage = JSON.parse(localStorage.getItem('key'));
-  const olCaminho = document.querySelector('.cart__items');
+  const olCaminho = document.querySelector(cartItem);
   olCaminho.innerHTML = cartItemStorage;
-  const listaOl = document.querySelectorAll('.cart__items');
+  const listaOl = document.querySelectorAll(cartItem);
   listaOl.forEach((li) => {
     li.addEventListener('click', cartItemClickListener);
   });
@@ -67,7 +67,7 @@ const fetchId = (id) => {
     .then((response) => response.json())
     .then((data) => {
       const setId = data;
-      document.querySelector('.cart__items').appendChild(createCartItemElement(setId));
+      document.querySelector(cartItem).appendChild(createCartItemElement(setId));
       saveCartListen();
     });
 };
