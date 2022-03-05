@@ -63,10 +63,7 @@ function saveCartListenContinue() {
   const cartItemStorage = JSON.parse(localStorage.getItem('key'));
   const olCaminho = document.querySelector(cartItem);
   olCaminho.innerHTML = cartItemStorage;
-  const listaOl = document.querySelectorAll(cartItem);
-  listaOl.forEach((li) => {
-    li.addEventListener('click', cartItemClickListener);
-  });
+  
 }
 
 function createCartItemElement({ id, title, price }) {
@@ -81,8 +78,7 @@ const fetchId = (id) => {
   fetch(`https://api.mercadolibre.com/items/${id}`)
     .then((response) => response.json())
     .then((data) => {
-      const setId = data;
-      document.querySelector(cartItem).appendChild(createCartItemElement(setId));
+      document.querySelector(cartItem).appendChild(createCartItemElement(data));
       saveCartListen();
       totalPrice();
     });
@@ -93,6 +89,7 @@ const pickCar = () => {
   buttonAddPickCar.forEach((button) => {
     button.addEventListener('click', (event) => {
       const getId = getSkuFromProductItem(event.target.parentElement);
+      console.log(getId);
       fetchId(getId);
     });
   });
@@ -109,7 +106,7 @@ const removeLoading = () => {
   document.querySelector('.loading').remove();
 }; 
 
-const fetchCurrency = async () => {
+const fetchCurrency = () => {
   const endPoint = 'https://api.mercadolibre.com/sites/MLB/search?q=computador';
   return new Promise((resolve) => {
     fetch(endPoint)
@@ -123,9 +120,9 @@ const fetchCurrency = async () => {
 const fetchCurrencyAsyncAwait = async () => {
   loading();
   const data = await fetchCurrency();
-  data.forEach((object) => {
+  data.forEach(({ id, title, thumbnail }) => {
     const productElement = createProductItemElement(
-      object.id, object.title, object.thumbnail,
+      id, title, thumbnail,
     );
     document.querySelector('.items').appendChild(productElement);
   });
